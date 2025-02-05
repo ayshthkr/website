@@ -1,5 +1,10 @@
-import { Button } from "@/components/ui/button";
+"use client";
+import DrawerComponent from "./drawer-component";
 
 export default function Home() {
-  return <Button>ASD</Button>;
+  return (
+    <div className="flex items-center justify-center min-h-screen w-full">
+      <DrawerComponent />
+    </div>
+  );
 }
