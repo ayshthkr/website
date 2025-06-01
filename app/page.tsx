@@ -157,7 +157,7 @@ export default function Home() {
           <div className="p-6">
             <p>
               <span className="font-bold">
-                Innohacks'24 Winner (March 2024)
+                Innohacks&apos;24 Winner (March 2024)
               </span>{" "}
               - Built an optimized e-commerce logistics system with
               polygon-based delivery zones and a fair, buyer-verified review
@@ -184,7 +184,7 @@ export default function Home() {
             <p>
               <span className="font-bold">Junior Council (Devcomm, NSUT)</span>{" "}
               - Co-developed a gamified DSA platform to boost coding engagement
-              and helped build Avinya'25's animated, responsive website using
+              and helped build Avinya&apos;25&apos;s animated, responsive website using
               React and Framer Motion.
             </p>
           </div>

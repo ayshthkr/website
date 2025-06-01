@@ -24,8 +24,7 @@ export default function SecondStackedCards() {
       let topPosition = 0;
       let bottomPosition = 0;
 
-      const newPositions = validRefs.map((ref, index) => {
-        const height = ref?.offsetHeight || 0;
+      const newPositions = validRefs.map((_, index) => {
 
         // First element starts at 0
         if (index === 0) {

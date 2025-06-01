@@ -1,25 +1,25 @@
 import { motion } from "motion/react";
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
 export default function First() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [, setMousePosition] = useState({ x: 0, y: 0 });
   const imageRef = useRef<HTMLDivElement>(null);
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
-  const [showCursorMask, setShowCursorMask] = useState(false);
+  const [, setShowCursorMask] = useState(false);
   const [isMaskOverlapping, setIsMaskOverlapping] = useState(false);
   const [maskDistance, setMaskDistance] = useState(0);
   const [overlapDirection, setOverlapDirection] = useState<'none' | 'top' | 'bottom' | 'left' | 'right'>('none');
   const [circleMaskPath, setCircleMaskPath] = useState("");
 
-  // Base clip path points for trapezium
-  const basePoints = [
+  // Base clip path points for trapezium - wrapped in useMemo
+  const basePoints = useMemo(() => [
     { x: 35, y: 5 },   // top left
     { x: 60, y: 0 },   // top right
     { x: 65, y: 100 }, // bottom right
     { x: 35, y: 100 }, // bottom left
-  ];
+  ], []);
 
   // Function to check if a point is inside the trapezium polygon
   const isPointInsidePolygon = (
@@ -39,38 +39,6 @@ export default function First() {
       if (intersect) inside = !inside;
     }
     return inside;
-  };
-
-  // Calculate distance from point to line segment
-  const distanceToLine = (
-    point: { x: number; y: number },
-    line: { x1: number; y1: number; x2: number; y2: number }
-  ) => {
-    // Vector from line start to point
-    const v1x = point.x - line.x1;
-    const v1y = point.y - line.y1;
-
-    // Vector representing the line
-    const v2x = line.x2 - line.x1;
-    const v2y = line.y2 - line.y1;
-
-    // Length of line squared
-    const lenSq = v2x * v2x + v2y * v2y;
-
-    // If line has zero length, just return distance to one of the endpoints
-    if (lenSq === 0) {
-      return Math.sqrt(v1x * v1x + v1y * v1y);
-    }
-
-    // Project v1 onto v2
-    const t = Math.max(0, Math.min(1, (v1x * v2x + v1y * v2y) / lenSq));
-
-    // Closest point on line
-    const projX = line.x1 + t * v2x;
-    const projY = line.y1 + t * v2y;
-
-    // Distance from point to closest point on line
-    return Math.sqrt(Math.pow(point.x - projX, 2) + Math.pow(point.y - projY, 2));
   };
 
   // Function to calculate distance to each edge and return the minimum distance and edge index
@@ -123,100 +91,87 @@ export default function First() {
     return { distance: minDist, edgeIndex: closestEdgeIndex, closestPoint };
   };
 
-  // Get the closest edge direction
-  const getClosestEdgeDirection = (
-    point: { x: number; y: number },
-    polygon: { x: number; y: number }[]
-  ): 'top' | 'bottom' | 'left' | 'right' => {
-    const { edgeIndex } = getDistanceAndEdge(point, polygon);
-
-    switch (edgeIndex) {
-      case 0: return 'top';    // Edge from point 0 to 1
-      case 1: return 'right';  // Edge from point 1 to 2
-      case 2: return 'bottom'; // Edge from point 2 to 3
-      case 3: return 'left';   // Edge from point 3 to 0
-      default: return 'top';
-    }
-  };
-
   // Generate a merged mask path when overlapping
-  const generateMergedMaskPath = (
-    cursorPosition: { x: number; y: number },
-    baseRadius: number,
-    polygon: { x: number; y: number }[],
-    direction: 'top' | 'bottom' | 'left' | 'right' | 'none',
-    distance: number
-  ) => {
-    // If not overlapping, just return a circle
-    if (direction === 'none' || distance > baseRadius * 1.5) {
-      return `circle(${baseRadius}px at ${cursorPosition.x}% ${cursorPosition.y}%)`;
-    }
-
-    // Get the closest point on the polygon edge
-    const { closestPoint } = getDistanceAndEdge(cursorPosition, polygon);
-
-    // Calculate blending factor based on distance
-    // As distance approaches 0, blendFactor approaches 1
-    const blendFactor = Math.max(0, Math.min(1, 1 - (distance / (baseRadius * 1.5))));
-
-    // Enhanced radius that grows as we get closer to the edge
-    const enhancedRadius = baseRadius * (1 + blendFactor * 1.5);
-
-    // For very close distances, create a special path that "merges" with the trapezium
-    if (blendFactor > 0.5) {
-      // Calculate control points for the merging effect
-      const midX = (cursorPosition.x + closestPoint.x) / 2;
-      const midY = (cursorPosition.y + closestPoint.y) / 2;
-
-      // Calculate perpendicular vector to the edge for bulging effect
-      let perpX, perpY;
-      switch (direction) {
-        case 'top':
-          perpX = 0;
-          perpY = -1;
-          break;
-        case 'bottom':
-          perpX = 0;
-          perpY = 1;
-          break;
-        case 'left':
-          perpX = -1;
-          perpY = 0;
-          break;
-        case 'right':
-          perpX = 1;
-          perpY = 0;
-          break;
-        default:
-          perpX = 0;
-          perpY = 0;
+  const generateMergedMaskPath = useCallback(
+    (
+      cursorPosition: { x: number; y: number },
+      baseRadius: number,
+      polygon: { x: number; y: number }[],
+      direction: 'top' | 'bottom' | 'left' | 'right' | 'none',
+      distance: number
+    ) => {
+      // If not overlapping, just return a circle
+      if (direction === 'none' || distance > baseRadius * 1.5) {
+        return `circle(${baseRadius}px at ${cursorPosition.x}% ${cursorPosition.y}%)`;
       }
 
-      // Calculate bulge amount based on proximity
-      const bulgeAmount = baseRadius * blendFactor * 1.2;
-      const bulgeX = midX + perpX * bulgeAmount;
-      const bulgeY = midY + perpY * bulgeAmount;
+      // Get the closest point on the polygon edge
+      const { closestPoint } = getDistanceAndEdge(cursorPosition, polygon);
 
-      // Calculate angle from cursor to closest point
-      const angle = Math.atan2(closestPoint.y - cursorPosition.y, closestPoint.x - cursorPosition.x);
+      // Calculate blending factor based on distance
+      // As distance approaches 0, blendFactor approaches 1
+      const blendFactor = Math.max(0, Math.min(1, 1 - (distance / (baseRadius * 1.5))));
 
-      // Points for bezier curves to create merging effect
-      const controlRadius = enhancedRadius * 1.2;
-      const control1X = cursorPosition.x + Math.cos(angle + Math.PI/4) * controlRadius;
-      const control1Y = cursorPosition.y + Math.sin(angle + Math.PI/4) * controlRadius;
-      const control2X = cursorPosition.x + Math.cos(angle - Math.PI/4) * controlRadius;
-      const control2Y = cursorPosition.y + Math.sin(angle - Math.PI/4) * controlRadius;
+      // Enhanced radius that grows as we get closer to the edge
+      const enhancedRadius = baseRadius * (1 + blendFactor * 1.5);
 
-      // Create a path that morphs from circle to a shape that extends toward the polygon edge
-      return `path('M ${cursorPosition.x + Math.cos(angle + Math.PI/2) * enhancedRadius}% ${cursorPosition.y + Math.sin(angle + Math.PI/2) * enhancedRadius}% ` +
-        `A ${enhancedRadius} ${enhancedRadius} 0 0 1 ${cursorPosition.x + Math.cos(angle - Math.PI/2) * enhancedRadius}% ${cursorPosition.y + Math.sin(angle - Math.PI/2) * enhancedRadius}% ` +
-        `Q ${control1X}% ${control1Y}% ${bulgeX}% ${bulgeY}% ` +
-        `Q ${control2X}% ${control2Y}% ${cursorPosition.x + Math.cos(angle + Math.PI/2) * enhancedRadius}% ${cursorPosition.y + Math.sin(angle + Math.PI/2) * enhancedRadius}% Z')`;
-    }
+      // For very close distances, create a special path that "merges" with the trapezium
+      if (blendFactor > 0.5) {
+        // Calculate control points for the merging effect
+        const midX = (cursorPosition.x + closestPoint.x) / 2;
+        const midY = (cursorPosition.y + closestPoint.y) / 2;
 
-    // Otherwise just use an enlarged circle
-    return `circle(${enhancedRadius}px at ${cursorPosition.x}% ${cursorPosition.y}%)`;
-  };
+        // Calculate perpendicular vector to the edge for bulging effect
+        let perpX, perpY;
+        switch (direction) {
+          case 'top':
+            perpX = 0;
+            perpY = -1;
+            break;
+          case 'bottom':
+            perpX = 0;
+            perpY = 1;
+            break;
+          case 'left':
+            perpX = -1;
+            perpY = 0;
+            break;
+          case 'right':
+            perpX = 1;
+            perpY = 0;
+            break;
+          default:
+            perpX = 0;
+            perpY = 0;
+        }
+
+        // Calculate bulge amount based on proximity
+        const bulgeAmount = baseRadius * blendFactor * 1.2;
+        const bulgeX = midX + perpX * bulgeAmount;
+        const bulgeY = midY + perpY * bulgeAmount;
+
+        // Calculate angle from cursor to closest point
+        const angle = Math.atan2(closestPoint.y - cursorPosition.y, closestPoint.x - cursorPosition.x);
+
+        // Points for bezier curves to create merging effect
+        const controlRadius = enhancedRadius * 1.2;
+        const control1X = cursorPosition.x + Math.cos(angle + Math.PI/4) * controlRadius;
+        const control1Y = cursorPosition.y + Math.sin(angle + Math.PI/4) * controlRadius;
+        const control2X = cursorPosition.x + Math.cos(angle - Math.PI/4) * controlRadius;
+        const control2Y = cursorPosition.y + Math.sin(angle - Math.PI/4) * controlRadius;
+
+        // Create a path that morphs from circle to a shape that extends toward the polygon edge
+        return `path('M ${cursorPosition.x + Math.cos(angle + Math.PI/2) * enhancedRadius}% ${cursorPosition.y + Math.sin(angle + Math.PI/2) * enhancedRadius}% ` +
+          `A ${enhancedRadius} ${enhancedRadius} 0 0 1 ${cursorPosition.x + Math.cos(angle - Math.PI/2) * enhancedRadius}% ${cursorPosition.y + Math.sin(angle - Math.PI/2) * enhancedRadius}% ` +
+          `Q ${control1X}% ${control1Y}% ${bulgeX}% ${bulgeY}% ` +
+          `Q ${control2X}% ${control2Y}% ${cursorPosition.x + Math.cos(angle + Math.PI/2) * enhancedRadius}% ${cursorPosition.y + Math.sin(angle + Math.PI/2) * enhancedRadius}% Z')`;
+      }
+
+      // Otherwise just use an enlarged circle
+      return `circle(${enhancedRadius}px at ${cursorPosition.x}% ${cursorPosition.y}%)`;
+    },
+    [getDistanceAndEdge]
+  );
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -306,12 +261,12 @@ export default function First() {
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, []);
+  }, [basePoints, generateMergedMaskPath]);
 
   // Get mask styles based on overlap state
   const getMaskStyles = () => {
     // Base values
-    let opacity = isMaskOverlapping ? 1 : 0.85;
+    const opacity = isMaskOverlapping ? 1 : 0.85;
     let filter = isMaskOverlapping ? "none" : "grayscale(0.2)";
 
     // Modify based on direction

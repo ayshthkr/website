@@ -47,8 +47,8 @@ export default function BlockGrid({
         const minGap = 2;
 
         // Initial estimate of how many blocks would fit
-        let initialCols = Math.floor(viewportWidth / (baseBlockSize + 2 * minGap));
-        let initialRows = Math.floor(viewportHeight / (baseBlockSize + 2 * minGap));
+        const initialCols = Math.floor(viewportWidth / (baseBlockSize + 2 * minGap));
+        const initialRows = Math.floor(viewportHeight / (baseBlockSize + 2 * minGap));
 
         // Calculate the perfect gap to fill the screen completely
         // We need to solve for: n * blockSize + (n+1) * gap = totalSpace
@@ -59,8 +59,8 @@ export default function BlockGrid({
         const newGap = Math.max(minGap, Math.min(idealGapX, idealGapY));
 
         // Recalculate rows and columns with the new gap
-        let cols = Math.floor((viewportWidth + newGap) / (baseBlockSize + newGap));
-        let rows = Math.floor((viewportHeight + newGap) / (baseBlockSize + newGap));
+        const cols = Math.floor((viewportWidth + newGap) / (baseBlockSize + newGap));
+        const rows = Math.floor((viewportHeight + newGap) / (baseBlockSize + newGap));
 
         // Now we need to adjust either the block size or gap to perfectly fill the space
         // Option 1: Adjust block size

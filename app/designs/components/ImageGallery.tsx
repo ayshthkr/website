@@ -47,7 +47,7 @@ export default function ImageGallery() {
         setMainImage(-1); // Reset main image on outside click
       }
     });
-    window.addEventListener("keydown", (e) => {
+    window.addEventListener("keydown", () => {
       setMainImage(-1); // Reset main image on Escape key press
     });
 

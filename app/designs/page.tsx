@@ -2,7 +2,7 @@
 
 import { useSearchParams } from "next/navigation";
 import First from "./components/1";
-import { JSX, useEffect, useState } from "react";
+import { JSX, Suspense, useEffect, useState } from "react";
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { toast } from "sonner";
@@ -17,12 +17,26 @@ const components: { [key: string]: JSX.Element } = {
   "2": <First />,
   "3": <StackedCards />,
   "4": <SecondStackedCards />,
-  "5": <SvgMask />
+  "5": <SvgMask />,
 };
 
 export default function Page() {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full h-full flex items-center justify-center">
+          Loading...
+        </div>
+      }
+    >
+      <MainPage />
+    </Suspense>
+  );
+}
+
+function MainPage() {
   const searchParams = useSearchParams();
-  var id = searchParams.get("id") || "1";
+  let id = searchParams.get("id") || "1";
 
   const [showControls, setShowControls] = useState(false);
   const [animateGrid, setAnimateGrid] = useState(false);

@@ -32,11 +32,11 @@ export default function StackedCards() {
           <div className="flex flex-col md:flex-row gap-8">
             <div className="flex-1">
               <p className="text-lg mb-4">
-                I'm a passionate developer with over 5 years of experience building web applications.
+                I&apos;m a passionate developer with over 5 years of experience building web applications.
                 I specialize in React, TypeScript, and modern front-end development.
               </p>
               <p className="text-lg">
-                When I'm not coding, you can find me hiking, reading, or experimenting with new technologies.
+                When I&apos;m not coding, you can find me hiking, reading, or experimenting with new technologies.
               </p>
             </div>
             <div className="flex-1 bg-gray-100 p-6 rounded-lg">
@@ -258,11 +258,11 @@ const ScrollingBlocks: React.FC<ScrollingBlocksProps> = ({ blocks = [] }) => {
           <h2 className="text-4xl font-bold mb-6">What Our Users Say</h2>
           <div className="space-y-6">
             <blockquote className="italic border-l-4 border-gray-300 pl-4 py-2">
-              "This scrolling component changed how I build websites. It's incredible!"
+              &quot;This scrolling component changed how I build websites. It&apos;s incredible!&quot;
               <footer className="text-gray-600 mt-2">— Alex Johnson</footer>
             </blockquote>
             <blockquote className="italic border-l-4 border-gray-300 pl-4 py-2">
-              "The animations are so smooth. My visitors love navigating my site now."
+              &quot;The animations are so smooth. My visitors love navigating my site now.&quot;
               <footer className="text-gray-600 mt-2">— Sarah Miller</footer>
             </blockquote>
           </div>
@@ -275,7 +275,7 @@ const ScrollingBlocks: React.FC<ScrollingBlocksProps> = ({ blocks = [] }) => {
       content: (
         <div className="p-8">
           <h2 className="text-4xl font-bold mb-6">Get In Touch</h2>
-          <p className="text-xl mb-6">We'd love to hear from you and help with your project.</p>
+          <p className="text-xl mb-6">We&apos;d love to hear from you and help with your project.</p>
           <div className="bg-gray-100 p-6 rounded-lg">
             <div className="space-y-4">
               <div>
