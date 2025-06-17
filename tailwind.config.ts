@@ -11,6 +11,7 @@ export default {
   	extend: {
 		fontFamily: {
 			sfpro: ['var(--font-sfpro)', 'sans-serif'],
+			satoshi: ['var(--font-satoshi)', 'sans-serif'],
 		},
   		colors: {
   			background: 'hsl(var(--background))',

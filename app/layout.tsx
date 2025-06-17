@@ -20,6 +20,11 @@ const sfpro = localFont({
   variable: "--font-sfpro",
 });
 
+const satoshi = localFont({
+  src: "./fonts/Satoshi.ttf",
+  variable: "--font-satoshi",
+});
+
 export const metadata: Metadata = {
   title: "AYSHTHKR",
   description: "Ayush Thakur - Portfolio",
@@ -34,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${sfpro.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${sfpro.variable} ${satoshi.variable} antialiased`}
       >
         {children}
         <Toaster position="top-center" />
