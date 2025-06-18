@@ -42,7 +42,7 @@ export default function First() {
   };
 
   // Function to calculate distance to each edge and return the minimum distance and edge index
-  const getDistanceAndEdge = (
+  const getDistanceAndEdge = useCallback((
     point: { x: number; y: number },
     polygon: { x: number; y: number }[]
   ): { distance: number; edgeIndex: number; closestPoint: { x: number; y: number } } => {
@@ -89,7 +89,7 @@ export default function First() {
     }
 
     return { distance: minDist, edgeIndex: closestEdgeIndex, closestPoint };
-  };
+  }, []);
 
   // Generate a merged mask path when overlapping
   const generateMergedMaskPath = useCallback(

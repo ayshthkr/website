@@ -146,7 +146,7 @@ export default function BlockGrid({
       opacity: 0,
       y: direction === "bottomToTop" ? 50 : -50,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 200,
         damping: 20,
         duration: 0.5,
@@ -156,7 +156,7 @@ export default function BlockGrid({
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 200,
         damping: 20,
         duration: 0.5,
@@ -166,7 +166,7 @@ export default function BlockGrid({
       opacity: 0,
       y: direction === "bottomToTop" ? -50 : 50,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 200,
         damping: 20,
         duration: 0.5,
